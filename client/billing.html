@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>store</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="style.css" rel="stylesheet" />
+<style>
+#products{
+	display: flex;
+	flex-direction: column;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+</style>
+	</head>
+
+<body>
+	
+
+	<div style="display: flex; flex-direction: row; justify-content: space-between; padding: 0 2rem; align-items: center;">
+		<h1 style="text-align: center;">Bill</h1>
+	</div>
+
+	<div style="padding: 1rem">
+		<div id="products">
+		</div>
+
+		<div id="total" style="margin-top: 1rem;"></div>
+
+		<br>
+
+		<div style="border: 2px solid black; padding: 1rem">
+			<div>
+				<span>Date: </span>
+				<span id="date"></span>
+			</div>
+			<div>
+				<span>Address: </span>
+				<span id="address"></span>
+			</div>
+			<div>
+				<span>Delivery Person: </span>
+				<span id="delivery-person"></span>
+			</div>
+			<div>
+				<span>Phone: </span>
+				<span id="delivery-person-phone"></span>
+			</div>
+			
+		</div>
+		<div>
+			<span><a href="track.html" onclick="address:image.html">Track order</a></span>
+			<span id="address"></span>
+		</div>
+		
+	</div>
+</body>
+
+<script src="./global.js"></script>
+<script>
+const elProducts = document.getElementById("products");
+const elTotal = document.getElementById("total");
+const elDate = document.getElementById("date");
+const elAddress = document.getElementById("address");
+const elDelP = document.getElementById("delivery-person");
+const elDelPh = document.getElementById("delivery-person-phone");
+const ord = JSON.parse(sessionStorage.order || null);
+
+function makeTable() {
+	if(!ord) {
+		alert("please select an order");
+		window.location.href = "user.html";
+		return;
+	}
+
+	let tableStr = `<table>
+		<tr>
+			<th>Product</th>
+			<th>Price</th>
+			<th>Quantity</th>
+		</tr>`;
+
+	for(let prod of ord.products) {
+		tableStr += `<tr>
+			<td>${prod.name}</td>
+			<td>${prod.price}</td>
+			<td>${prod.quantity}</td>
+		</tr>`;
+	}
+
+	tableStr += "</table>";
+
+	elProducts.innerHTML = tableStr;
+	elTotal.innerText = `Total: Rs. ${ord.billing.totalPrice}`;
+
+	elDate.innerText = ord.billing.date;
+	elAddress.innerText = ord.billing.address;
+	elDelP.innerText = ord.billing.deliveryPerson.name;
+	elDelPh.innerText = ord.billing.deliveryPerson.phone;
+}
+
+makeTable();
+document.getElementById('billing').onclick=function(){
+	window.alert('Welcome to payment ')
+
+}
+
+</script>
+</html>

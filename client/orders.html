@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>store</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="style.css" rel="stylesheet" />
+<style>
+#order-list{
+	display: flex;
+	flex-direction: column;
+	padding: 1rem;
+}
+
+.order{
+	border: 2px solid black;
+	padding: 0.5rem;
+	margin-bottom: 1rem;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.order:hover{
+	background-color: #5280eb;
+	color: white;
+}
+
+.btn {
+	padding: 0.2rem 0.5rem;
+	background-color: transparent;
+	border: 2px solid black;
+	text-decoration: none;
+	color: black;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+</style>
+	</head>
+<body>
+	<div class="navbar">
+		<span><img class="img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjyjf6vesMmJy_yDwxmL76J2uwHUqBGSvZVA&s" ></span> 
+		<h10 class="h10">Binkeyit</h10>
+
+		<a class="active" href="user.html">Home</a>
+		<a href="login.html">Login</a>
+		<a href="signup.html">Sign In</a>
+
+		<a href="store.html">Store</a>
+		<a href="orders.html">Orders</a>
+		<a href="about.html">About</a>
+
+	</div>
+	
+	<div style="display: flex; flex-direction: row; justify-content: space-between; padding: 0 2rem; align-items: center;">
+		<h1 style="text-align: center;">Your Orders</h1>
+		<div>
+			<a href="user.html" style="margin-right: 1rem;"><button class="btn">Home</button></a>
+			<span><a href="page.html" id="billing">payment</a></span>
+		</div>
+		
+        
+	</div>
+
+	<div id="order-list">
+		
+	</div>
+
+<script src="./global.js"></script>
+<script>
+const elOrders = document.getElementById("order-list");
+let orders = [];
+
+function handleOrderClick(idx) {
+	const ord = orders[idx];
+	sessionStorage.order = JSON.stringify(ord);
+	window.location.href = "page.html"
+}
+
+function createOrders(data) {
+	orders = data.orders;
+	const ordListStr = data.orders.map((ord, idx) => {
+		return `<div class="order" onclick='handleOrderClick(${idx})'>
+			<div>Order ID: ${ord._id}</div>
+			<div>Date: ${ord.billing.date}</div>
+			<div>Price: Rs. ${ord.billing.totalPrice}</div>
+		</div>`
+	}).join("");
+
+	elOrders.innerHTML = ordListStr;
+}
+
+async function getOrderList() {
+	if(!localStorage.name) {
+		alert("please login first");
+		window.location.href = "user.html";
+		return;
+	}
+
+	try {
+		const res = await fetch(URL("/orders/" + localStorage.name), {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+
+		const d = await res.json();
+
+		createOrders(d);
+	} catch(e) {
+		console.log(e);
+		alert("something went wrong.");
+	}
+}
+
+getOrderList();
+
+</script>
+</body>
+</html>

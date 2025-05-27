@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>store</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="style.css" rel="stylesheet" />
+<style>
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  min-width: 10rem;
+  max-width: 10rem;
+  text-align: center;
+  font-family: arial;
+  margin-right: 1rem;
+  margin-top: 1rem;
+}
+
+.price {
+  color: grey;
+  font-size: 22px;
+}
+
+.card button {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+
+.card button:hover {
+  opacity: 0.7;
+}
+
+#categories{
+	display: flex;
+	flex-direction: column;
+}
+
+.category{
+	padding: 1rem;
+}
+.category h2 {
+	background-color: #fad673;
+	padding: 0.5rem;
+}
+
+.products{
+	margin-top: 1rem;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.prod-img{
+	width: 100%;
+	max-height: 7rem;
+	min-height: 7rem;
+	object-fit: contain;
+}
+
+.cart {
+	padding: 0.2rem 0.5rem;
+	background-color: transparent;
+	border: 2px solid black;
+	text-decoration: none;
+	color: black;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+</style>
+	</head>
+
+<body>
+	<div class="navbar">
+		<span><img class="img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjyjf6vesMmJy_yDwxmL76J2uwHUqBGSvZVA&s" ></span> 
+		<h10 class="h10">Binkeyit</h10>
+
+		<a class="active" href="user.html">Home</a>
+		<a href="login.html">Login</a>
+		<a href="signup.html">Sign In</a>
+
+		<a href="store.html">Store</a>
+		<a href="orders.html">Orders</a>
+		<a href="about.html">About</a>
+
+	</div>
+
+	<div style="display: flex; flex-direction: row; justify-content: space-between; padding: 0 2rem; align-items: center;">
+		<h1 style="text-align: center;">Store</h1>
+		<div>
+			<button style="border: 10rem;"> ADD ITEM</button>
+			
+			<a href="cart.html"><button class="cart">Cart</button></a>
+			
+		</div>
+		
+	</div>
+
+	<div id="categories">
+		
+	</div>
+
+</body>
+
+<script src="./global.js"></script>
+<script>
+
+const elCategories = document.getElementById("categories");
+
+function addToCart(prod) {
+	if(!localStorage.getItem("cart")) {
+		localStorage.cart = JSON.stringify([]);
+	}
+	let cart = JSON.parse(localStorage.cart);
+
+	for(let i = 0; i < cart.length; i++) {
+		if(cart[i].name === prod.name) {
+			alert("item already in cart");
+			return;
+		}
+	}
+
+	cart.push({...prod, qty: 1});
+	localStorage.cart = JSON.stringify(cart);
+	alert("item added to cart.");
+}
+
+function createStore(products) {
+	let categories = {};
+
+	for(let prod of products) {
+		const cat = prod.category;
+		if(cat in categories) {
+			categories[cat].push(prod);
+		} else {
+			categories[cat] = [prod];
+		}
+	}
+
+	for(let cat in categories) {
+		const productList = categories[cat].map(({ name, price, _id }) => {
+			return `<div class="card">
+				<img class="prod-img" src="products/${name}">
+				<div>${name}</div>
+				<p class="price">Rs. ${price}</p>
+				<p><button onclick="addToCart({ name: '${name}', price: ${price}, _id: '${_id}' })">Add to Cart</button></p>
+			</div>`
+		}).join("");
+		elCategories.innerHTML += `<div class="category">
+			<h2 class="cat">
+				${cat}
+			</h2>
+			<div class="products">
+				${productList}
+			</div>
+		</div>`;
+	}
+}
+
+async function getProductList() {
+	try {
+		const res = await fetch(URL("/product-list"), {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+
+		const d = await res.json();
+
+		if(d.err) {
+			alert("something went wrong");
+			return
+		}
+
+		createStore(d.products);
+	} catch(e) {
+		console.log(e);
+		alert("something went wrong.");
+	}
+}
+
+getProductList();
+</script>
+</html>

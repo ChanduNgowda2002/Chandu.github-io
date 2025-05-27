@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="description" content="" />
+	<meta name="author" content="" />
+	<title>Store management</title>
+	<!-- Favicon-->
+	<!-- Bootstrap icons-->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+	<!-- Core theme CSS (includes Bootstrap)-->
+	<link href="style.css" rel="stylesheet" />
+</head>
+
+<body>
+	<div class="main-content">
+		<div class="section__content section__content--p30">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="table-responsive table--no-card m-b-30">
+							<div class="navbar">
+								<span><img class="img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjyjf6vesMmJy_yDwxmL76J2uwHUqBGSvZVA&s" ></span> 
+								<h10 class="h10">Binkeyit</h10>
+						
+								<a class="active" href="user.html">Home</a>
+								<a href="customer.html" > Total Customer</a>
+								<a href="storeadmin.html" >Store</a>
+								<a href="billingsadmin.html" >Total billing upto date</a>
+								<a href="aboutadmin.html">About</a>
+								</div>
+							<h3 align="center">Total customer</h3>
+							<hr />
+							<table id="customer-table" class="table table-borderless table-striped table-earning">
+								<thead>
+									<tr>
+									<tr>
+										<th width="10">S.NO</th>
+										<th>Customer name</th>
+										<th>PhoneNumber</th>
+										<th>Address</th>
+										<th>orders</th>
+									</tr>
+								</thead>
+
+								<tr>
+									<td width="10">S.NO</td>
+									<td>Customer name</td>
+									<td>PhoneNumber</td>
+									<td>Address</td>
+									<td>orders</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script src="global.js"></script>
+
+<script>
+
+let ordersTable = document.getElementById("customer-table");
+
+function createOrders(orders) {
+	let tableStr = `<thead>
+		<tr>
+			<th width="10">S.NO</th>
+			<th>Customer name</th>
+			<th>PhoneNumber</th>
+			<th>Address</th>
+			<th>orders</th>
+		</tr>
+	</thead>`;
+
+	let i = 1;
+
+	for(let ord of orders) {
+		const row = `<tr>
+			<th width="10">${i++}</th>
+			<th>${ord.name}</th>
+			<th>${ord.phone}</th>
+			<th>${ord.address}</th>
+			<th>${ord.orders.length}</th>
+		</tr>`
+
+		tableStr += row;
+	}
+
+	ordersTable.innerHTML = tableStr;
+}
+
+async function getOrderList() {
+	if(!localStorage.adminName) {
+		alert("please login first");
+		window.location.href = "user.html";
+		return;
+	}
+	try {
+		const res = await fetch(URL("/all-customers"), {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		});
+
+		const d = await res.json();
+
+		createOrders(d.customers);
+	} catch(e) {
+		console.log(e);
+		alert("something went wrong.");
+	}
+}
+
+getOrderList();
+</script>
+</body>
